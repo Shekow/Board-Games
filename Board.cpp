@@ -261,7 +261,7 @@ void FiveByFive_X_O_Board::displayBoard() const
 
 bool FiveByFive_X_O_Board::isWinner() const
 {
-    gameIsOver() && C_Board::isWinner();
+    return gameIsOver() && C_Board::isWinner();
 }
 bool FiveByFive_X_O_Board::gameIsOver() const
 {
