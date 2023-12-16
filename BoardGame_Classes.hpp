@@ -1,7 +1,3 @@
-// Class definition for XO game classes
-// Author:  Mohammad El-Ramly & Sherif Youssef
-// Date:    10/10/2022
-// Version: 1
 #ifndef _BoardGame_CLASSES_H
 #define _BoardGame_CLASSES_H
 #include <iostream>
@@ -19,7 +15,7 @@ class Board
 {
     protected:
         size_t rows, cols, moves{};
-        char** board;
+        char **board;
         vector<pair<size_t, size_t>> moveList;
         virtual bool inBounds(int x, int y) const = 0;
     public:
@@ -56,6 +52,7 @@ class C_Board: public Board
         virtual bool isWinner() const;
         virtual char getWinner() const;
         virtual bool isDraw() const;
+        virtual void displayBoard() const;
         virtual bool gameIsOver() const;
         virtual ~C_Board();
 };
@@ -65,7 +62,6 @@ class X_O_Board: public C_Board
 {
     public:
         X_O_Board();
-        virtual void displayBoard() const;
 };
 
 class Pyramidic_X_O_Board: public C_Board
@@ -84,14 +80,12 @@ class Connect_4_Board: public C_Board
         Connect_4_Board();
         virtual vector<pair<size_t, size_t>> getMoves() const;
         virtual bool updateBoard(size_t x, size_t y, char symbol);
-        virtual void displayBoard() const;
 };
 
 class FiveByFive_X_O_Board: public C_Board
 {
     public:
         FiveByFive_X_O_Board();
-        virtual void displayBoard() const;
         virtual bool isWinner() const;
         virtual bool gameIsOver() const;
 };
@@ -102,7 +96,7 @@ class Player
         string name;
         char symbol;
     public:
-        Player (char symbol, string name = "");
+        Player (char symbol, string name = "Human");
         virtual void getMove(size_t& x, size_t& y);
         string getName();
         char getSymbol();

@@ -7,7 +7,7 @@ Player::Player(char symbol, string name): symbol(toupper(symbol)), name(name)
 }
 void Player::getMove(size_t &x, size_t &y)
 {
-    cout << name << ",  " << "please enter your move: ";
+    cout << name << ", please enter your move: ";
     cin >> x >> y;
 }
 string Player::getName()
@@ -25,7 +25,10 @@ RandomPlayer::RandomPlayer(char symbol, Board *board): Player(symbol, "Random Pl
 }
 void RandomPlayer::getMove(size_t &x, size_t &y)
 {
-    if (board->gameIsOver()) return;
+    if (board->gameIsOver()) 
+    {
+        return;
+    }
     vector<pair<size_t, size_t>> moves = board->getMoves();
     size_t randomIndex = rand() % moves.size();
     x = moves[randomIndex].first, y = moves[randomIndex].second;
@@ -39,8 +42,14 @@ tuple<double, size_t, size_t> AI_Player::evaluatePos(char cuSymbol, int dep)
     
     if (board->gameIsOver())
     {
-        if (board->isWinner() && board->getWinner() != symbol) res = -1;
-        else res = board->isWinner();
+        if (board->isWinner() && board->getWinner() != symbol) 
+        {
+            res = -1;
+        }
+        else 
+        {
+            res = board->isWinner();
+        }
     }
     else if (!dep)
     {
@@ -50,18 +59,28 @@ tuple<double, size_t, size_t> AI_Player::evaluatePos(char cuSymbol, int dep)
     else
     {    
         vector<pair<size_t, size_t>> moves = board->getMoves();
+        if (moves.empty())
+        {
+            throw runtime_error("gathering moves failed");
+        }
         for (auto &m: moves)
         {
-            board->updateBoard(m.first, m.second, cuSymbol);
+            if (!board->updateBoard(m.first, m.second, cuSymbol))
+            {
+                throw runtime_error("Board update failed");
+            }
             nextEva = get<0>(evaluatePos(nextSymbol, dep - 1));
             if ((cuSymbol == symbol && res < nextEva) || (cuSymbol != symbol && res > nextEva))
             {
                 res = nextEva, x = m.first, y = m.second;
             }
-            board->undoLastMove();
+            if (!board->undoLastMove())
+            {
+                throw runtime_error("Undoing last move failed");
+            }
             if ((cuSymbol == symbol && res == 1) || (cuSymbol != symbol && res == -1))
             {
-                return {res, x, y};
+                break;
             }
         }
         
@@ -74,10 +93,16 @@ AI_Player::AI_Player(char symbol, Board *board): Player(symbol, "AI Player"), bo
 }
 void AI_Player::getMove(size_t &x, size_t &y)
 {
-    if (board->gameIsOver()) return;
+    if (board->gameIsOver()) 
+    {
+        return;
+    }
     int depth{}, moves = board->getMoves().size(), pro{1}, lim = 1e6;
     double res;
     for (; pro < lim && moves; pro *= moves, depth++, moves--);
-    if (pro > lim) depth--;
+    if (pro > lim) 
+    {
+        depth--;
+    }
     tie(res, x, y) = evaluatePos(symbol, depth);
 }

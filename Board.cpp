@@ -8,7 +8,7 @@ bool C_Board::inBounds(int x, int y) const
 }
 
 size_t C_Board::numOfSeq(char symbol) const
-{ // R, D, DR, DL
+{ 
     int dx[] = {0, 0, 1, -1, 1, -1, 1, -1};
     int dy[] = {1, -1, 0, 0, 1, -1, -1, 1};
     size_t total{};
@@ -16,12 +16,21 @@ size_t C_Board::numOfSeq(char symbol) const
     {
         for (int j{}; j < cols; j++)
         {
-            if (board[i][j] != symbol) continue;
+            if (board[i][j] != symbol)
+            {
+                continue;
+            }
             for (int d{}; d < 8; d += 2)
             {
                 size_t ctr{};
-                for (int x{i}, y{j}; inBounds(x, y) && board[x][y] == board[i][j]; x += dx[d], y += dy[d]) ctr++;
-                if (ctr >= minSeqLen) total++;
+                for (int x{i}, y{j}; inBounds(x, y) && board[x][y] == board[i][j]; x += dx[d], y += dy[d]) 
+                {
+                    ctr++;
+                }
+                if (ctr >= minSeqLen) 
+                {
+                    total++;
+                }
             }
         }
     }
@@ -61,7 +70,10 @@ vector<vector<char>> C_Board::getBoard() const
 vector<pair<size_t, size_t>> C_Board::getMoves() const
 {
     vector<pair<size_t, size_t>> moves;
-    if (gameIsOver()) return moves;
+    if (gameIsOver())
+    {
+        return moves;
+    }
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < cols; j++)
@@ -87,8 +99,10 @@ void C_Board::resetBoard()
 }
 bool C_Board::updateBoard(size_t x, size_t y, char symbol)
 {
-    if (gameIsOver()) return false;
-    if (!inBounds(x, y) || board[x][y]) return false;
+    if (gameIsOver() || !inBounds(x, y) || board[x][y])
+    {
+        return false;
+    }
     board[x][y] = toupper(symbol);
     moves++;
     moveList.push_back({x, y});
@@ -96,7 +110,10 @@ bool C_Board::updateBoard(size_t x, size_t y, char symbol)
 }
 bool C_Board::undoLastMove()
 {
-    if (moveList.empty()) return false;
+    if (moveList.empty()) 
+    {
+        return false;
+    }
     board[moveList.back().first][moveList.back().second] = 0;
     moveList.pop_back();
     moves--;
@@ -109,30 +126,17 @@ bool C_Board::isWinner() const
 }
 char C_Board::getWinner() const
 {
-    if (!isWinner()) return 0;
+    if (!isWinner())
+    {
+        return 0;
+    }
     return (numOfSeq('X') > numOfSeq('O') ? 'X' : 'O');
 }
 bool C_Board::isDraw() const
 {
     return moves == maxMoves && !isWinner();
 }
-bool C_Board::gameIsOver() const
-{
-    return isWinner() || isDraw();
-}
-C_Board::~C_Board()
-{
-    delete [] board;
-}
-
-
-
-X_O_Board::X_O_Board(): C_Board(3, 3, 3, 9)
-{
-
-}
-
-void X_O_Board::displayBoard() const
+void C_Board::displayBoard() const
 {
     for (int i{}; i < rows; i++)
     {
@@ -143,6 +147,19 @@ void X_O_Board::displayBoard() const
         }
         cout << endl;
     }
+}
+bool C_Board::gameIsOver() const
+{
+    return isWinner() || isDraw();
+}
+C_Board::~C_Board()
+{
+    delete [] board;
+}
+
+X_O_Board::X_O_Board(): C_Board(3, 3, 3, 9)
+{
+
 }
 
 Pyramidic_X_O_Board::Pyramidic_X_O_Board(): C_Board(3, 5, 3, 9)
@@ -168,7 +185,10 @@ vector<vector<char>> Pyramidic_X_O_Board::getBoard() const
 vector<pair<size_t, size_t>> Pyramidic_X_O_Board::getMoves() const
 {
     vector<pair<size_t, size_t>> moves;
-    if (gameIsOver()) return moves;
+    if (gameIsOver())
+    {
+        return moves;
+    }
     for (size_t i{}; i < rows; i++)
     {
         int cor = (cols - (2 * i + 1)) / 2;
@@ -179,7 +199,6 @@ vector<pair<size_t, size_t>> Pyramidic_X_O_Board::getMoves() const
     }
     return moves;
 }
-
 
 bool Pyramidic_X_O_Board::updateBoard(size_t x, size_t y, char symbol)
 {
@@ -204,7 +223,6 @@ void Pyramidic_X_O_Board::displayBoard() const
     }
 }
 
-
 Connect_4_Board::Connect_4_Board(): C_Board(6, 7, 4, 6 * 7)
 {
 
@@ -213,7 +231,10 @@ Connect_4_Board::Connect_4_Board(): C_Board(6, 7, 4, 6 * 7)
 vector<pair<size_t, size_t>> Connect_4_Board::getMoves() const
 {
     vector<pair<size_t, size_t>> moves;
-    if (gameIsOver()) return moves;
+    if (gameIsOver())
+    {
+         return moves;
+    }
     for (size_t j{}; j < cols; j++)
     {
         if (!board[0][j])
@@ -226,39 +247,19 @@ vector<pair<size_t, size_t>> Connect_4_Board::getMoves() const
 
 bool Connect_4_Board::updateBoard(size_t x, size_t y, char symbol)
 {
-    if (!inBounds(0, y) || board[0][y]) return false;
+    if (!inBounds(0, y) || board[0][y])
+    {
+        return false;
+    }
     int nx = rows - 1;
     for (;nx >= 0 && board[nx][y]; nx--);
     return C_Board::updateBoard(nx, y, symbol);
-}
-void Connect_4_Board::displayBoard() const
-{
-    for (int i{}; i < rows; i++)
-    {
-        for (int j{}; j < cols; j++)
-        {
-            cout << (board[i][j] ? board[i][j] : '.');
-        }
-        cout << endl;
-    }
 }
 
 FiveByFive_X_O_Board::FiveByFive_X_O_Board(): C_Board(5, 5, 3, 24)
 {
 
 }
-void FiveByFive_X_O_Board::displayBoard() const
-{
-    for (int i{}; i < rows; i++)
-    {
-        for (int j{}; j < cols; j++)
-        {
-            cout << (board[i][j] ? board[i][j] : '.');
-        }
-        cout << endl;
-    }
-}
-
 bool FiveByFive_X_O_Board::isWinner() const
 {
     return gameIsOver() && C_Board::isWinner();

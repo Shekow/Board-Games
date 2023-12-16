@@ -2,7 +2,7 @@
 #include"../include/BoardGame_Classes.hpp"
 using namespace std;
 
-GameManager::GameManager(Board* bPtr, Player* pPtr[2])
+GameManager::GameManager(Board *bPtr, Player *pPtr[2])
 {
     boardPtr = bPtr, playerPtr[0] = pPtr[0], playerPtr[1] = pPtr[1];
 }
